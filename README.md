@@ -1,6 +1,6 @@
 # rust_cfg_parser - Parser for rust cfg() expression
 
-[![Build Status](https://github.com/samarunraj/rust_cfg_parser/actions/workflows/CI/badge.svg)](https://github.com/samarunraj/rust_cfg_parser/actions?workflow=CI)
+[![Build Status](https://github.com/samarunraj/rust_cfg_parser/actions/workflows/ci.yml/badge.svg)](https://github.com/samarunraj/rust_cfg_parser/actions?workflow=CI)
 [![Crates.io](https://img.shields.io/crates/v/rust_cfg_parser.svg)](https://crates.io/crates/rust_cfg_parser)
 [![Docs](https://docs.rs/rust_cfg_parser/badge.svg)](https://docs.rs/rust_cfg_parser)
 
