@@ -1,0 +1,21 @@
+[package]
+name = "rust_cfg_parser"
+version = "0.1.0"
+authors = ["Sam Arun Raj Seeniraj <samarunraj@gmail.com>"]
+categories = ["development-tools", "parsing"]
+description = "Parser for rust cfg() expression"
+documentation = "https://docs.rs/rust_cfg_parser"
+edition = "2018"
+homepage = "https://github.com/samarunraj/rust_cfg_parser"
+repository = "https://github.com/samarunraj/rust_cfg_parser"
+keywords = ["parser", "cfg"]
+license = "MIT"
+readme = "README.md"
+
+[features]
+default = ["all"]
+all = ["std"]
+std = []
+
+[dependencies]
+cfg-if = "1.0.0"
