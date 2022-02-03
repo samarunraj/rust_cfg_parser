@@ -383,117 +383,84 @@ mod tests {
     #[test]
     fn target_os_only() {
         let expr = parse("cfg(target_os = \"hermit\")").unwrap();
-        assert_eq!(
-            false,
-            expr.matches(&[CfgValue::KeyPair(
-                "target_os".to_string(),
-                "freebsd".to_string()
-            )])
-        );
-        assert_eq!(
-            true,
-            expr.matches(&[CfgValue::KeyPair(
-                "target_os".to_string(),
-                "hermit".to_string()
-            )])
-        );
+        assert!(!expr.matches(&[CfgValue::KeyPair(
+            "target_os".to_string(),
+            "freebsd".to_string()
+        )]));
+        assert!(expr.matches(&[CfgValue::KeyPair(
+            "target_os".to_string(),
+            "hermit".to_string()
+        )]));
     }
 
     #[test]
     fn os_only() {
         let expr = parse("cfg(windows)").unwrap();
-        assert_eq!(false, expr.matches(&[CfgValue::Name("linux".to_string())]));
-        assert_eq!(true, expr.matches(&[CfgValue::Name("windows".to_string())]));
+        assert!(!expr.matches(&[CfgValue::Name("linux".to_string())]));
+        assert!(expr.matches(&[CfgValue::Name("windows".to_string())]));
     }
 
     #[test]
     fn not_os_only() {
         let expr = parse("cfg(not( windows ))").unwrap();
-        assert_eq!(true, expr.matches(&[CfgValue::Name("linux".to_string())]));
-        assert_eq!(
-            false,
-            expr.matches(&[CfgValue::Name("windows".to_string())])
-        );
+        assert!(expr.matches(&[CfgValue::Name("linux".to_string())]));
+        assert!(!expr.matches(&[CfgValue::Name("windows".to_string())]));
     }
 
     #[test]
     fn any_one_os() {
         let expr = parse("cfg(any (linux, windows))").unwrap();
-        assert_eq!(true, expr.matches(&[CfgValue::Name("linux".to_string())]));
-        assert_eq!(true, expr.matches(&[CfgValue::Name("windows".to_string())]));
-        assert_eq!(
-            false,
-            expr.matches(&[CfgValue::Name("freebsd".to_string())])
-        );
+        assert!(expr.matches(&[CfgValue::Name("linux".to_string())]));
+        assert!(expr.matches(&[CfgValue::Name("windows".to_string())]));
+        assert!(!expr.matches(&[CfgValue::Name("freebsd".to_string())]));
     }
 
     #[test]
     fn all_any() {
         let expr = parse("cfg(all(any(target_arch =\"x86_64\", target_arch = \"aarch64\"), target_os = \"hermit\"))").unwrap();
-        assert_eq!(
-            true,
-            expr.matches(&[
-                CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
-            ])
-        );
-        assert_eq!(
-            false,
-            expr.matches(&[
-                CfgValue::KeyPair("target_arch".to_string(), "i686".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "freebsd".to_string())
-            ])
-        );
+        assert!(expr.matches(&[
+            CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
+        ]));
+        assert!(!expr.matches(&[
+            CfgValue::KeyPair("target_arch".to_string(), "i686".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "freebsd".to_string())
+        ]));
     }
 
     #[test]
     fn all_any_any() {
         let expr = parse("cfg(all(any(target_arch =\"x86_64\", target_arch   =   \"aarch64\"),any(target_feature=\"sse\",target_feature=\"sse2\"), target_os = \"hermit\"))").unwrap();
-        assert_eq!(
-            true,
-            expr.matches(&[
-                CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
-                CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
-            ])
-        );
-        assert_eq!(
-            false,
-            expr.matches(&[
-                CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
-                CfgValue::KeyPair("target_feature".to_string(), "sse4.1".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
-            ])
-        );
-        assert_eq!(
-            false,
-            expr.matches(&[
-                CfgValue::KeyPair("target_arch".to_string(), "i686".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "freebsd".to_string())
-            ])
-        );
+        assert!(expr.matches(&[
+            CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
+            CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
+        ]));
+        assert!(!expr.matches(&[
+            CfgValue::KeyPair("target_arch".to_string(), "x86_64".to_string()),
+            CfgValue::KeyPair("target_feature".to_string(), "sse4.1".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "hermit".to_string())
+        ]));
+        assert!(!expr.matches(&[
+            CfgValue::KeyPair("target_arch".to_string(), "i686".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "freebsd".to_string())
+        ]));
     }
 
     #[test]
     fn all_features() {
         let expr = parse("cfg(all(all(target_feature =\"sse\", target_feature = \"sse2\", target_feature = \"sse4.1\"), target_os = \"windows\"))").unwrap();
-        assert_eq!(
-            false,
-            expr.matches(&[
-                CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
-                CfgValue::KeyPair("target_feature".to_string(), "fsx4".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "windows".to_string())
-            ])
-        );
-        assert_eq!(
-            true,
-            expr.matches(&[
-                CfgValue::KeyPair("target_feature".to_string(), "sse".to_string()),
-                CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
-                CfgValue::KeyPair("target_feature".to_string(), "sse4.1".to_string()),
-                CfgValue::KeyPair("target_os".to_string(), "windows".to_string())
-            ])
-        );
+        assert!(!expr.matches(&[
+            CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
+            CfgValue::KeyPair("target_feature".to_string(), "fsx4".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "windows".to_string())
+        ]));
+        assert!(expr.matches(&[
+            CfgValue::KeyPair("target_feature".to_string(), "sse".to_string()),
+            CfgValue::KeyPair("target_feature".to_string(), "sse2".to_string()),
+            CfgValue::KeyPair("target_feature".to_string(), "sse4.1".to_string()),
+            CfgValue::KeyPair("target_os".to_string(), "windows".to_string())
+        ]));
     }
 
     #[test]
